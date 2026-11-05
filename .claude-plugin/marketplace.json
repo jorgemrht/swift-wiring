@@ -1,0 +1,15 @@
+{
+  "name": "swift-wiring",
+  "description": "Claude Code plugin for Wiring, lightweight dependency injection for Swift",
+  "owner": {
+    "name": "Jorgemrht",
+    "url": "https://github.com/jorgemrht"
+  },
+  "plugins": [
+    {
+      "name": "wiring",
+      "source": "./claude-plugin",
+      "description": "How to declare, use, test and preview dependencies with Wiring."
+    }
+  ]
+}

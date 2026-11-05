@@ -1,0 +1,10 @@
+{
+  "name": "wiring",
+  "description": "How to declare, use, test and preview dependencies with Wiring.",
+  "author": {
+    "name": "Jorgemrht",
+    "url": "https://github.com/jorgemrht"
+  },
+  "homepage": "https://github.com/jorgemrht/swift-wiring",
+  "license": "MIT"
+}

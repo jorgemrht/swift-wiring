@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  macos:
+    name: macOS (${{ matrix.configuration }})
+    runs-on: macos-26
+    strategy:
+      matrix:
+        configuration: [debug, release]
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build
+        run: swift build -c ${{ matrix.configuration }}
+      - name: Test
+        run: swift test -c ${{ matrix.configuration }}
+
+  apple-platforms:
+    name: Apple platforms
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v5
+      - name: Test on the iOS simulator
+        run: |
+          device=$(xcrun simctl list devices available --json | jq -r '[.devices[][] | select(.name | startswith("iPhone"))][0].udid')
+          xcodebuild test -scheme Wiring -destination "id=$device"
+      - name: Build for tvOS, watchOS and visionOS
+        run: |
+          for platform in tvOS watchOS visionOS; do
+            xcodebuild build -scheme Wiring -destination "generic/platform=$platform"
+          done
+      - name: Build the documentation
+        run: xcodebuild docbuild -scheme Wiring -destination generic/platform=macOS
+
+  linux:
+    name: Linux
+    runs-on: ubuntu-latest
+    container: swift:6.4
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build
+        run: swift build
+      - name: Test
+        run: swift test
+
+  claude-plugin:
+    name: Claude Code plugin
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Validate the marketplace and the plugin
+        run: |
+          npm install --global @anthropic-ai/claude-code
+          claude plugin validate .
+          claude plugin validate ./claude-plugin
